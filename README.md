@@ -10,6 +10,10 @@ AI とのチャットのやり取りから、**コミュニティに投稿する
 チャットのやり取り → ①目次化 → ②質問 6 つ(推奨つき) → ③執筆 → ④タイトル 3 案 → ⑤秘匿情報の点検 → ⑥出力
 ```
 
+> **入れ方の早見**: Claude Code / Codex は `npx skills@latest add yyy365lab/chat-to-article`。
+> Gemini など指示文しか登録できないツールは **[SKILL.md の全文(raw)](https://raw.githubusercontent.com/yyy365lab/chat-to-article/main/skills/chat-to-article/SKILL.md)** をコピーして登録 → [手順はこちら](#gemini-などプロンプトしか登録できないツール)。
+> この README を貼っても動きません。
+
 ## 特徴
 
 - **会話の時系列をなぞりません。** 記事の主役は「作ったもの」と「読者が持ち帰れる知見」で、会話は素材です
@@ -108,11 +112,21 @@ npx skills@latest add yyy365lab/chat-to-article
 
 ### Gemini など、プロンプトしか登録できないツール
 
-`SKILL.md` の中身(frontmatter より下)を**そのまま指示文として登録**してください。
+登録するのは **この README ではなく、スキル本体 `SKILL.md` の全文**です。次の 4 手順で入ります。
+
+1. **[SKILL.md をプレーンテキストで開く](https://raw.githubusercontent.com/yyy365lab/chat-to-article/main/skills/chat-to-article/SKILL.md)**(GitHub の raw 表示。装飾のない文字だけのページが開きます)
+2. そのページで **Ctrl+A → Ctrl+C**(先頭の `---` で囲まれた部分も含めて全文で構いません)
+3. Gemini の **Gem(カスタム指示)** を新規作成し、「指示」欄に貼り付け。名前は `chat-to-article`
+4. 作業が一区切りついたチャットで、その Gem に「**この会話を記事にして**」と頼む(`/chat-to-article` のようなコマンドはないので、言葉で呼びます)
+
+> raw ページが開けない場合は、リポジトリの `skills/chat-to-article/SKILL.md` を開き、右上の **Raw** ボタン → 全選択 → コピー。
+
 スクリプトも外部参照も持たない 1 ファイル構成なので、貼るだけで同じ挙動になります。
 ファイルを書けない環境では、記事は **1 つのコードブロック**にまとまって返ってきます
 (チャットの本文と混ざらないように)。コピー用ボタンで全文を取り、HTML なら `.html` として
 保存してブラウザで開く(または Canvas のプレビューで描画する)→ 範囲コピー → CMS に貼る、の順です。
+
+スキルが更新されたら、同じ raw リンクからコピーし直して Gem の指示を置き換えてください。
 
 ## 中身
 
