@@ -1,0 +1,50 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<title>着手前に3回崩れた — AI に問い詰めさせてからスキルを作った話</title>
+<style>body{font-family:sans-serif;max-width:720px;margin:2rem auto;line-height:1.8}
+pre{background:#f4f4f4;padding:1em;overflow:auto}table{border-collapse:collapse}
+td,th{border:1px solid #bbb;padding:4px 10px}img{max-width:100%}</style></head>
+<body><article>
+<!-- title: 着手前に3回崩れた — AI に問い詰めさせてからスキルを作った話 -->
+
+<p><strong>TL;DR</strong></p>
+<ul>
+<li>チャットを記事にするスキル <code>chat-to-article</code> を作った。<code>SKILL.md</code> 4,000字ほど1枚、スクリプトなし</li>
+<li>書き始める前に grilling(AI に自分を問い詰めさせる工程)を5ラウンド。実装ゼロの時点で設計が3回崩れた</li>
+<li>崩れる場所は選べる。作ってから崩れるより、作る前に崩れたほうが安い</li>
+</ul>
+
+<h2>いま答えられる質問だけが飛んでくる</h2>
+
+<p>Matt Pocock のスキル集(37個)の看板が grilling。本体は 2,015バイトの Markdown 1枚しかない。</p>
+
+<blockquote><p>決定事項を設計ツリーとして捉えよ。フロンティアとは、前提がすでに確定している決定の集合——つまり、まだ聞いていない答えを推測せずに、今この瞬間に聞ける質問のことである。</p></blockquote>
+
+<p>普通の AI も質問を並べてくる。ただしそこには「上の答え次第で消える質問」が混ざる。grilling はそれを次のラウンドへ送る。しかも全問に推奨案が付くので「全部それでいい」で進める。答える側が軽いから5ラウンド続いた 💡</p>
+
+<h2>崩れたのは、この3か所</h2>
+
+<p><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 110'%3E%3Crect x='8' y='30' width='128' height='50' rx='8' fill='%23e8eef7' stroke='%233b5b8c'/%3E%3Crect x='158' y='30' width='128' height='50' rx='8' fill='%23e8eef7' stroke='%233b5b8c'/%3E%3Crect x='308' y='30' width='128' height='50' rx='8' fill='%23e8eef7' stroke='%233b5b8c'/%3E%3Crect x='458' y='30' width='128' height='50' rx='8' fill='%23e8eef7' stroke='%233b5b8c'/%3E%3Ctext x='72' y='60' font-family='sans-serif' font-size='14' text-anchor='middle' fill='%233b5b8c'%3E記事を作る設計%3C/text%3E%3Ctext x='222' y='60' font-family='sans-serif' font-size='14' text-anchor='middle' fill='%233b5b8c'%3E34MB の壁%3C/text%3E%3Ctext x='372' y='60' font-family='sans-serif' font-size='14' text-anchor='middle' fill='%233b5b8c'%3EGemini 制約%3C/text%3E%3Ctext x='522' y='60' font-family='sans-serif' font-size='14' text-anchor='middle' fill='%233b5b8c'%3E仕様が確定%3C/text%3E%3Cline x1='138' y1='55' x2='150' y2='55' stroke='%233b5b8c' stroke-width='2'/%3E%3Cpolygon points='150,50 158,55 150,60' fill='%233b5b8c'/%3E%3Cline x1='288' y1='55' x2='300' y2='55' stroke='%233b5b8c' stroke-width='2'/%3E%3Cpolygon points='300,50 308,55 300,60' fill='%233b5b8c'/%3E%3Cline x1='438' y1='55' x2='450' y2='55' stroke='%233b5b8c' stroke-width='2'/%3E%3Cpolygon points='450,50 458,55 450,60' fill='%233b5b8c'/%3E%3Ctext x='147' y='22' font-family='sans-serif' font-size='14' text-anchor='middle'%3E崩壊1%3C/text%3E%3Ctext x='297' y='22' font-family='sans-serif' font-size='14' text-anchor='middle'%3E崩壊2%3C/text%3E%3Ctext x='447' y='22' font-family='sans-serif' font-size='14' text-anchor='middle'%3E崩壊3%3C/text%3E%3C/svg%3E" alt="設計が3回崩れてから仕様が確定するまでの流れ" style="max-width:100%">
+つまり、1行も実装しないうちに三度作り直したということ。</p>
+
+<ol>
+<li><strong>作っているのは記事ではなくスキル。</strong> AI が「読者は誰ですか」と私に聞いてきた時点でズレていた。読者も公開先も記事ごとに変わる=スキルが実行時に聞くこと。埋め込むべきは答えではなく、聞く仕組みだった。<em>「私がやりたいのは、記事を作る、ということではありません。記事を作るためのスキルを作る、です。」</em>と止めた</li>
+<li><strong>過去ログが 34MB。</strong> AI が勝手に実測してきた(A=9セッション34MB / B=1セッション15MB / C=0本)。文脈に入らないうえ、ログが1本も残っていないプロジェクトもある。私が聞かれても答えられなかった数字 🤔</li>
+<li><strong>Gemini はプロンプト1本だけ。</strong> スクリプトもファイル読み取りも使えない。素材を「①いまの会話 ②貼られたログ ③読める環境なら過去ログ」の縮退式にして、①だけで成立させた</li>
+</ol>
+
+<h2>使ってみたら、要件定義書が出てきた</h2>
+
+<p>ドッグフーディングで1本書かせたら、事実は正確なのに読み物になっていない 😇 そこで文体の節と、プリセット6種(ゆるっと/ていねい/きっちり/実況/さくっと/ハンズオン)を追加。実行時の質問は4つから5つ(何の話/読者/主眼/公開範囲/文体)になった。この記事は「さくっと」。</p>
+
+<p>投稿先の CMS でも実測が要った。Markdown をテキストのまま貼ると記号が残り、描画済みを貼れば見出しも表もブロックとして入る。mermaid は描画されないので、図はテキスト寄りの方式に振った。</p>
+
+<h2>真似するなら、Markdown 1枚から</h2>
+
+<p>自作スキルは9個、うち7個はスクリプトなし。仕組みを凝るより、着手前に「いま答えられる質問」を浴びるほうが効いた。同じやり方で気持ちよく崩れた例があれば、ぜひ聞かせてください 👋</p>
+
+<ul>
+<li>grilling の原典: <a href="https://github.com/mattpocock/skills">https://github.com/mattpocock/skills</a>(skills/productivity/grilling/SKILL.md)</li>
+<li>最初に解説してもらったスキル集: <a href="https://github.com/plannotator/effective-html">https://github.com/plannotator/effective-html</a></li>
+</ul>
+
+</article></body></html>

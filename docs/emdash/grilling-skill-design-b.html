@@ -1,0 +1,118 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<title>AIに問い詰めさせたら、1行も書かないうちに設計が3回変わりました</title>
+<style>body{font-family:sans-serif;max-width:720px;margin:2rem auto;line-height:1.8}
+pre{background:#f4f4f4;padding:1em;overflow:auto}table{border-collapse:collapse}
+td,th{border:1px solid #bbb;padding:4px 10px}img{max-width:100%}</style></head>
+<body><article>
+<!-- title: AIに問い詰めさせたら、1行も書かないうちに設計が3回変わりました -->
+
+<h2>コードを書き始める前に、設計が3回ひっくり返りました</h2>
+
+<p>AIとのチャットのやり取りを素材にして記事を書き起こすスキル、<code>chat-to-article</code> を作りました。実体は Markdown が1枚だけで、コードは1行も書いていません。</p>
+
+<p>ただ、今回お伝えしたいのは成果物よりも作り方のほうです。実装に入る前に <strong>grilling(問い詰め)</strong> という工程を挟みました。AIに私を容赦なく質問攻めにさせる、それだけの手順です。結果として、まだ何も書いていない段階で設計が3回崩れました。普通に「記事化スキルを作って」と頼んでいたら、この3つはおそらく全部、作り終えたあとに判明していたはずです。</p>
+
+<p>スキルという仕組みは知っているけれど自分で作ったことはない、という方に向けて書いています。私にいちばん効いたのは、スキルの書き方ではなく<strong>決める順番</strong>のほうでした。</p>
+
+<h2>できたのは、5つ質問してから記事を書く1枚のファイルです</h2>
+
+<p><code>/chat-to-article</code> と打つと、AIはまず会話を読んで「何をやったか」の目次を内部で作ります。そのうえで、5つだけ質問してきます。何の話にするか、読者は誰か、記事の主眼はどこか、公開範囲はどこまでか、そして文体をどうするか。この5つです。</p>
+
+<p>全部に推奨案が付いてくるので、答えるのが面倒なら「全部推奨で」の一言で書き始まります。実際、いま読んでいただいているこの記事も、その一言から生まれました。</p>
+
+<p><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 90' width='640' height='90' role='img'%3E%3Crect x='16' y='25' width='88' height='40' rx='8' fill='%23e8eef7' stroke='%2333507a' stroke-width='1.5'/%3E%3Ctext x='60' y='50' font-family='sans-serif' font-size='13' text-anchor='middle' fill='%2333507a'%3E会話%3C/text%3E%3Cline x1='105' y1='45' x2='113' y2='45' stroke='%2333507a' stroke-width='1.5'/%3E%3Cpath d='M120 45 L112 41 L112 49 Z' fill='%2333507a'/%3E%3Crect x='120' y='25' width='88' height='40' rx='8' fill='%23e8eef7' stroke='%2333507a' stroke-width='1.5'/%3E%3Ctext x='164' y='50' font-family='sans-serif' font-size='13' text-anchor='middle' fill='%2333507a'%3E目次%3C/text%3E%3Cline x1='209' y1='45' x2='217' y2='45' stroke='%2333507a' stroke-width='1.5'/%3E%3Cpath d='M224 45 L216 41 L216 49 Z' fill='%2333507a'/%3E%3Crect x='224' y='25' width='88' height='40' rx='8' fill='%23e8eef7' stroke='%2333507a' stroke-width='1.5'/%3E%3Ctext x='268' y='50' font-family='sans-serif' font-size='13' text-anchor='middle' fill='%2333507a'%3E5つの質問%3C/text%3E%3Cline x1='313' y1='45' x2='321' y2='45' stroke='%2333507a' stroke-width='1.5'/%3E%3Cpath d='M328 45 L320 41 L320 49 Z' fill='%2333507a'/%3E%3Crect x='328' y='25' width='88' height='40' rx='8' fill='%23e8eef7' stroke='%2333507a' stroke-width='1.5'/%3E%3Ctext x='372' y='50' font-family='sans-serif' font-size='13' text-anchor='middle' fill='%2333507a'%3E執筆%3C/text%3E%3Cline x1='417' y1='45' x2='425' y2='45' stroke='%2333507a' stroke-width='1.5'/%3E%3Cpath d='M432 45 L424 41 L424 49 Z' fill='%2333507a'/%3E%3Crect x='432' y='25' width='88' height='40' rx='8' fill='%23e8eef7' stroke='%2333507a' stroke-width='1.5'/%3E%3Ctext x='476' y='50' font-family='sans-serif' font-size='13' text-anchor='middle' fill='%2333507a'%3E伏せ字点検%3C/text%3E%3Cline x1='521' y1='45' x2='529' y2='45' stroke='%2333507a' stroke-width='1.5'/%3E%3Cpath d='M536 45 L528 41 L528 49 Z' fill='%2333507a'/%3E%3Crect x='536' y='25' width='88' height='40' rx='8' fill='%23e8eef7' stroke='%2333507a' stroke-width='1.5'/%3E%3Ctext x='580' y='50' font-family='sans-serif' font-size='13' text-anchor='middle' fill='%2333507a'%3E出力%3C/text%3E%3C/svg%3E" alt="chat-to-article の処理の流れ。会話から目次、5つの質問、執筆、伏せ字点検を経て出力に至る" style="max-width:100%"></p>
+
+<p>つまり、素材から目次を作る工程と、公開前に秘匿情報を潰す工程が、必ず両端に入るという形です。</p>
+
+<p>実体は <code>SKILL.md</code> が1ファイル、4,000字ほど。スクリプトも外部ファイルもありません。私がこれまでに作った自作スキルは9個ありますが、そのうち7個は同じくスクリプトなしで動いています。Markdown 1枚で成立する範囲は、思っていたよりずっと広いというのが実感です。</p>
+
+<h2>問い詰めの正体は「いま聞ける質問だけを聞く」でした</h2>
+
+<p>きっかけは Matt Pocock さんが公開している <a href="https://github.com/mattpocock/skills">mattpocock/skills</a> でした。37個のスキルが入っていて、作者が「最も人気があり、変更を加えるときは毎回使え」と書いているのが grilling です。実物を開いてみたら 2,015バイトしかありませんでした。原稿用紙2枚ちょっとです。</p>
+
+<p>核になっている考え方は、この一文に凝縮されていました。</p>
+
+<blockquote><p>決定事項を設計ツリーとして捉えよ。フロンティアとは、前提がすでに確定している決定の集合——つまり、まだ聞いていない答えを推測せずに、今この瞬間に聞ける質問のことである。</p></blockquote>
+
+<p>普通のAIも「確認させてください」と質問を並べてきます。ただ、その中には<strong>上の答え次第で消えてなくなる質問</strong>が混ざっていて、答える側が混乱します。grilling はそれを構造として禁じています。</p>
+
+<p><img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 620 220' width='620' height='220' role='img'%3E%3Crect x='240' y='12' width='140' height='36' rx='8' fill='%23e8eef7' stroke='%2333507a' stroke-width='1.5'/%3E%3Ctext x='310' y='35' font-family='sans-serif' font-size='14' text-anchor='middle' fill='%2333507a'%3E予約機能をつくる%3C/text%3E%3Cline x1='310' y1='48' x2='310' y2='70' stroke='%2333507a' stroke-width='1.5'/%3E%3Cline x1='160' y1='70' x2='460' y2='70' stroke='%2333507a' stroke-width='1.5'/%3E%3Cline x1='160' y1='70' x2='160' y2='92' stroke='%2333507a' stroke-width='1.5'/%3E%3Cline x1='310' y1='70' x2='310' y2='92' stroke='%2333507a' stroke-width='1.5'/%3E%3Cline x1='460' y1='70' x2='460' y2='92' stroke='%2333507a' stroke-width='1.5'/%3E%3Crect x='95' y='92' width='130' height='36' rx='8' fill='%23e8eef7' stroke='%2333507a' stroke-width='1.5'/%3E%3Ctext x='160' y='115' font-family='sans-serif' font-size='14' text-anchor='middle' fill='%2333507a'%3E誰が使う%3C/text%3E%3Crect x='245' y='92' width='130' height='36' rx='8' fill='%23e8eef7' stroke='%2333507a' stroke-width='1.5'/%3E%3Ctext x='310' y='115' font-family='sans-serif' font-size='14' text-anchor='middle' fill='%2333507a'%3E重複は許す%3C/text%3E%3Crect x='395' y='92' width='130' height='36' rx='8' fill='%23e8eef7' stroke='%2333507a' stroke-width='1.5'/%3E%3Ctext x='460' y='115' font-family='sans-serif' font-size='14' text-anchor='middle' fill='%2333507a'%3E承認フロー%3C/text%3E%3Cline x1='460' y1='128' x2='460' y2='172' stroke='%2333507a' stroke-width='1.5'/%3E%3Crect x='395' y='172' width='130' height='36' rx='8' fill='none' stroke='%2333507a' stroke-width='1.5' stroke-dasharray='5 4'/%3E%3Ctext x='460' y='195' font-family='sans-serif' font-size='14' text-anchor='middle' fill='%2333507a'%3E承認者は誰%3C/text%3E%3Ctext x='8' y='115' font-family='sans-serif' font-size='12' fill='%2333507a'%3Eいま聞ける%3C/text%3E%3Ctext x='8' y='195' font-family='sans-serif' font-size='12' fill='%2333507a'%3E次のラウンド%3C/text%3E%3C/svg%3E" alt="設計ツリーの図。予約機能をつくるという決定の下に、誰が使う・重複は許す・承認フローの3つがいま聞ける質問として並び、承認者は誰は次のラウンドに回される" style="max-width:100%"></p>
+
+<p>上の段が埋まるまで、下の段は質問として存在してはいけない。ルールとしてはそれだけです。</p>
+
+<p>もうひとつ、私が唸ったのは役割分担をはっきり書いている部分でした。</p>
+
+<blockquote><p>事実を見つけるのはお前の仕事であり、断じてユーザーの仕事ではない。(中略)決定はユーザーのものである。</p></blockquote>
+
+<p>事実はAIが調べる、決定は人間がする。この線引きが、2回目の崩壊でそのまま効いてきます。</p>
+
+<h2>1回目 — 私が作りたかったのは、記事ではなくスキルでした</h2>
+
+<p>ラウンド2で、AIは「どのコミュニティに出しますか」「記事1本の単位はどうしますか」と聞いてきました。それらしい質問なのですが、答えながらどうにも噛み合わない感じがあって、途中で止めてこう言いました。</p>
+
+<blockquote><p>私がやりたいのは、記事を作る、ということではありません。記事を作るためのスキルを作る、です。</p></blockquote>
+
+<p>これが一番大きい崩壊でした。決めるべきことが、実は2つの層に分かれていたのです。読者も公開先も、スキルの仕様ではなく<strong>記事ごとに変わる選択</strong>のほうでした。</p>
+
+<table>
+<tr><th>層</th><th>中身</th><th>いつ決めるか</th></tr>
+<tr><td>A スキルの仕様</td><td>発動方法、素材の取り方、出力先、伏せ字の仕組み</td><td>いま</td></tr>
+<tr><td>B 記事ごとの選択</td><td>読者、記事の単位、文体、公開範囲</td><td>スキルが実行時に聞く</td></tr>
+</table>
+
+<p>スキルに焼き付けるべきなのは答えではなく「聞く仕組み」でした。気づかないまま進んでいたら、特定の投稿先の作法が埋め込まれた、自分にしか使えないスキルができあがっていたと思います。</p>
+
+<p>同じ罠は、たぶんスキル作り全般にあります。何かをスキル化しようとしている方は、いま決めようとしている項目が「毎回変わるもの」ではないか、一度疑ってみてください。</p>
+
+<h2>2回目 — 34MBという数字は、私の頭からは出てきませんでした</h2>
+
+<p>「プロジェクト全体の会話ログを素材にする」と決めた直後、AIが勝手に手元のログを数えてきました。あるプロジェクトは9セッションで合計34MB、別のプロジェクトは1セッションで15MB、そして3つ目はログが0本。</p>
+
+<p>34MBは文脈に入りません。しかも、ログがまったく残っていないプロジェクトもある。別の場所で作業したものです。素材を全部読ませる前提は、この時点で消えました。代わりに「目次を先に作り、記事に使う箇所だけ深掘りする」という二段構えになっています。</p>
+
+<p>ここは「事実はAIが調べる」がそのまま効いた場面でした。私は「プロジェクト全体を素材に」と発想しただけで、それが物理的に何MBになるかは知りません。<strong>聞かれていたら答えられませんでした。</strong>設計の穴が、自分の頭ではなくファイルシステムの側から出てきたのは、正直なところ少し驚きました。</p>
+
+<h2>3回目 — 配布すると決めた瞬間、スクリプト前提が消えました</h2>
+
+<p>3つ目は、私自身が出した制約でした。このスキルは配布するつもりで、Gemini でも同じように動いてほしい。ところが Gemini ではプロンプト1本しか登録できません。</p>
+
+<p>ここでいくつもの前提が同時に潰れました。自分の手元にしかない記録に頼る設計は、他人の環境にそれが無いので使えない。ログを抽出するスクリプトも、置き場所がないので使えない。過去のセッションログを読む前提も、環境によっては読むファイルそのものが存在しない。</p>
+
+<p>そこで、<strong>素材の在り処だけを環境依存にして、処理の手順は共通にする</strong>という形に落としました。</p>
+
+<pre><code class="language-text">素材の在り処 -- 上から順に、使えるものを使う
+
+  1. いまの会話        どの環境にも必ずある
+  2. 貼られたログ      あれば加える
+  3. 過去セッション    ファイルを読める環境のみ
+</code></pre>
+
+<p>肝は、1だけでも記事が書けることです。長いチャット1本で作りきったプロジェクトなら、その会話が全体像そのものなので、素材が足りないと謝る必要はありません。スキル本文にも「謝らない・断らない」と書き込みました。</p>
+
+<h2>使ってみて分かったのは、足りないのは文体だったことです</h2>
+
+<p>grilling を5ラウンド回して仕様を固め、そのまま実装しました。設計から実装完了までの記録は1時間24分です。そのほとんどが問い詰めで、実装は終盤のごく一部でした。</p>
+
+<p>そして、できたスキルで最初の1本を書かせてみたところ、仕様どおりには動いたものの、出てきた記事が<strong>要件定義書のような文章</strong>でした。名詞だけの見出しが並び、体言止めの箇条書きが続く。事実は正しいのに、人が書いたブログには読めないのです。</p>
+
+<p>そこで文体の節を足し、質問を4つから5つに増やしました。5つ目が「文体は?」で、ゆるっと・ていねい・きっちり・実況・さくっと・ハンズオンの6種類から選びます。文末をどうするか、絵文字を使うか、箇条書きをどこまで許すかが、プリセットごとに変わる仕掛けです。この記事は「ていねい」で書いています。</p>
+
+<p>投稿先の作法にも、貼ってみて初めて分かったことがありました。この記事を出している EmDash では、Markdown をテキストのまま貼ると記号がそのまま残ってしまい、描画済みの状態を貼ると見出しも引用もコードブロックも表も、そのままブロックとして入りました。mermaid は描画されなかったので、図は画像とテキストで描く方針に切り替えています。ついでに、EmDash 自体を立ち上げるときに有料プラン専用の設定を外し、セッション周りの重複エラーを直しました。</p>
+
+<h2>真似するなら、質問の順番だけでも持ち帰ってください</h2>
+
+<p>今回いちばんの持ち帰りは、grilling という道具そのものよりも「<strong>質問には順番がある</strong>」という一点でした。答えが他の未解決の質問に依存する質問は、いま聞いても意味がない。この規律を入れるだけで、対話の質がはっきり変わります。スキルを作らなくても、次のチャットから使えます。</p>
+
+<p>あわせて、推奨案を必ず添えるという作法も効きました。答える側は「全部それでいい」と返せば済むので、質問が10個あっても止まりません。答えるコストが低いから最後まで走る、という設計です。私は自分のスキルの質問文にも、これをそのまま持ち込みました。</p>
+
+<p>もうひとつ。使う前に想像で仕上げようとしないほうがよさそうです。文体の問題も、投稿先で記号が残る問題も、1回動かすまで気づけませんでした。作ったら早めに1本流してみて、出てきたものを見てから直す。そのほうが確実でした。</p>
+
+<p>同じように自作スキルを育てている方がいたら、最初の1回で何が壊れたかをぜひ聞かせてください。私はこれから、Gemini に貼っても同じ挙動になるかを確かめるつもりです。配布物としては、そこが確かめられていないと意味がないので。</p>
+
+<hr>
+
+<ul>
+<li>grilling の原典: <a href="https://github.com/mattpocock/skills">https://github.com/mattpocock/skills</a> (skills/productivity/grilling/SKILL.md)</li>
+<li>最初に解説してもらっていたスキル集: <a href="https://github.com/plannotator/effective-html">https://github.com/plannotator/effective-html</a></li>
+</ul>
+</article></body></html>

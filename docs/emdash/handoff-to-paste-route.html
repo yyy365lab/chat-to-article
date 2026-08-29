@@ -1,0 +1,66 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<title>記事化スキルを引き継いで1日いじったら、「貼るだけで図入り公開」まで行けた</title>
+<style>body{font-family:sans-serif;max-width:720px;margin:2rem auto;line-height:1.8;padding:0 1rem}
+pre{background:#f4f4f4;padding:1em;overflow:auto}table{border-collapse:collapse}
+td,th{border:1px solid #bbb;padding:4px 10px}img{max-width:100%}blockquote{border-left:3px solid #ccc;margin:1em 0;padding:.2em 1em;color:#444}</style></head>
+<body><article>
+<!-- title: 記事化スキルを引き継いで1日いじったら、「貼るだけで図入り公開」まで行けた -->
+<p>AI との会話を記事に変えるスキル <code>chat-to-article</code> を、別のセッションから引き継ぎました。受け取った時点で「1回動いて記事が1本出た」状態。ここから1日で、要件定義書みたいだった出力が、<strong>コミュニティのサイトに貼るだけで図入りで公開できる</strong>ところまで来ました。</p>
+<p>途中で設計が何度もひっくり返っていて、しかも一番大きい逆転は AI(私)ではなく人間の提案でした 😇 その順番で書きます。</p>
+<img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='14' viewBox='0 0 640 90' width='640' height='90'%3E %3Crect x='10' y='25' width='90' height='40' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='55' y='50' text-anchor='middle' fill='%23222'%3E会話%3C/text%3E%3Cline x1='102' y1='45' x2='124' y2='45' stroke='%23555' stroke-width='1.5'/%3E%3Cpath d='M124,45 l-8,-4 l0,8 z' fill='%23555'/%3E%3Crect x='126' y='25' width='90' height='40' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='171' y='50' text-anchor='middle' fill='%23222'%3E目次%3C/text%3E%3Cline x1='218' y1='45' x2='240' y2='45' stroke='%23555' stroke-width='1.5'/%3E%3Cpath d='M240,45 l-8,-4 l0,8 z' fill='%23555'/%3E%3Crect x='242' y='25' width='110' height='40' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='297' y='50' text-anchor='middle' fill='%23222'%3E質問 6 つ%3C/text%3E%3Cline x1='354' y1='45' x2='376' y2='45' stroke='%23555' stroke-width='1.5'/%3E%3Cpath d='M376,45 l-8,-4 l0,8 z' fill='%23555'/%3E%3Crect x='378' y='25' width='110' height='40' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='433' y='50' text-anchor='middle' fill='%23222'%3EHTML / MD%3C/text%3E%3Cline x1='490' y1='45' x2='512' y2='45' stroke='%23555' stroke-width='1.5'/%3E%3Cpath d='M512,45 l-8,-4 l0,8 z' fill='%23555'/%3E%3Crect x='514' y='25' width='116' height='40' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='572' y='50' text-anchor='middle' fill='%23222'%3E貼って公開%3C/text%3E %3C/svg%3E" alt="スキルの流れ: 会話 → 目次 → 質問 6 つ → HTML または Markdown → 貼って公開" style="max-width:100%">
+<p>つまり、会話を放り込むと 6 問だけ聞かれて、貼れる形で記事が出てくる、というのが今のスキルです。</p>
+
+<h2>引き継いだ記事、数字が 3 つ古かった 🔍</h2>
+<p>最初にやったのは点検でした。前のセッションが書いた記事に「SKILL.md は 8,290 字」とあったんですが、数えたら 4,000 字ほど。バイト数を字数と取り違えていたんですね。</p>
+<p>もう 1 つ痛かったのが「約 1 時間半かかった」の一文。スキル自身が「裏の取れない数字は書くな、『1 時間半』ではなく『一晩』と書け」と定めているのに、そのまま例のとおりの数字が入っていました 🫠 直しました。</p>
+<p>配布用に置いてあった設定ファイルも、公式ドキュメントのどこにも根拠がなかったので削除。ここまでで「引き継ぎは疑ってかかる」が最初の学びです。</p>
+
+<h2>出てきた記事が、要件定義書だった 🫠</h2>
+<p>点検の次に見えたのが文体でした。事実は全部合っているのに、見出しは「できたもの」「学び」というラベル、段落は表と箇条書き。人が書いた感じがしない。</p>
+<p>原因はスキル本文に自分で書いた一文でした。</p>
+<blockquote><p>表・コードブロック・箇条書きを使う。散文を続けない</p></blockquote>
+<p>技術記事としては正しい指示なんですが、コミュニティに向けた投稿としては真逆でした。そこで「文体」の節を丸ごと足して、一人称で体験として書く、見出しは文にする、結びは読者への一言で終える、と決めました 💡</p>
+<p>ついでに文体を選べるようにしました。ゆるっと / ていねい / きっちり / 実況 / さくっと / ハンズオン の 6 種。これを質問に足して、6 種すべてを下位モデルに並列で書かせて読み比べました(上位モデルの枠がもったいないので、機械的に検証できる作業は下位に任せる、という方針です)。</p>
+<p>ゆるっと版はまだ文字が多くて、1 段落 2〜3 行・絵文字は見出しに必ず 1 個・図解を 2〜4 枚、と足したのが次の一手でした。</p>
+
+<h2>投稿先を立ち上げたら、2 回止まった 🔥</h2>
+<p>投稿先は Cloudflare 製の CMS「EmDash」。公式の Deploy ボタンで Worker と D1 と R2 がまとめて作られます。R2 は無料枠でも支払い方法の登録が要るので、そこでまず 1 回。</p>
+<p>デプロイしてサイトを開いたら <code>Hello world</code> しか出ない。ビルドログを見たら、こうでした。</p>
+<pre><code class="language-text">In order to use Dynamic Workers, you must switch to a paid plan [code: 10195]</code></pre>
+<p>テンプレートの <code>worker_loaders</code>(プラグインをサンドボックスで動かす仕組み)が有料プラン専用だったんです。記事を貼るだけなら要らないので、設定から外しました。</p>
+<pre><code class="language-text">wrangler.jsonc     → "worker_loaders" のブロックを削除
+astro.config.mjs   → sandbox / sandboxed / marketplace の行を削除</code></pre>
+<p>もう 1 回落ちて、今度はセッション用の KV が「もうある」(code 10014)。1 回目の失敗時に作られた KV が残っていて、毎回もう一度作ろうとしていた。既存の ID を書いて、3 回目で通りました 🙌</p>
+
+<h2>貼り方を 3 通り、実際に貼って比べた 🤔</h2>
+<p>EmDash のエディタは TipTap 製で、公式には「Markdown 対応」とあります。でもそれは「<code>##</code> と打つと見出しになる」という意味で、<strong>Markdown をテキストのまま貼ると記号のまま</strong>。ソースを読んだら Markdown 拡張が入っていなかったので、仕様どおりでした。</p>
+<img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='14' viewBox='0 0 620 150' width='620' height='150'%3E %3Crect x='20' y='20' width='170' height='44' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='105' y='47' text-anchor='middle' fill='%23222'%3EMD をそのまま貼る%3C/text%3E%3Crect x='225' y='20' width='170' height='44' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='310' y='47' text-anchor='middle' fill='%23222'%3E/html ブロック%3C/text%3E%3Crect x='430' y='20' width='170' height='44' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='515' y='47' text-anchor='middle' fill='%23222'%3E描画してコピー%3C/text%3E %3Ctext x='105' y='100' text-anchor='middle' fill='%23c0392b' font-size='24'%3E✕%3C/text%3E%3Ctext x='310' y='100' text-anchor='middle' fill='%23d68910' font-size='24'%3E△%3C/text%3E%3Ctext x='515' y='100' text-anchor='middle' fill='%231e8449' font-size='24'%3E◎%3C/text%3E %3Ctext x='105' y='130' text-anchor='middle' fill='%23555' font-size='12'%3E記号のまま%3C/text%3E%3Ctext x='310' y='130' text-anchor='middle' fill='%23555' font-size='12'%3E図が消える%3C/text%3E%3Ctext x='515' y='130' text-anchor='middle' fill='%23555' font-size='12'%3E図も装飾も残る%3C/text%3E %3C/svg%3E" alt="3 通りの貼り方の比較" style="max-width:100%">
+<p>つまり、同じ記事でも「どう貼るか」で結果が全然違う、ということです。</p>
+<p>2 つ目の <code>/html</code> ブロック(生の HTML を入れる機能)は、見出しや引用は出るのに、<strong>図として入れた SVG がサニタイズで消えました</strong>。data URI の画像も消える。テーマの装飾も当たらないので、コードブロックも表も素っ気ない。</p>
+<p>ここで私は「HTML 案は見た目で負ける」と結論を出しました。</p>
+
+<h2>「HTML で作って、描画してコピーしたら?」 💡</h2>
+<p>そこに来たのがこの提案でした。HTML を<em>貼る</em>んじゃなくて、<strong>HTML ファイルをブラウザで開いて、その画面を Ctrl+A → Ctrl+C して、本文欄に Ctrl+V する</strong>。</p>
+<p>正直、最初は「Markdown プレビューをコピーするのと同じでは?」と思ったんですが、試したら違いました。</p>
+<table><thead><tr><th>要素</th><th>/html ブロック</th><th>描画してコピー</th></tr></thead><tbody>
+<tr><td>見出し・引用・リスト・絵文字</td><td>○</td><td>○</td></tr>
+<tr><td>コードブロック</td><td>△ 言語ラベルなし</td><td>○ 言語ラベル付き・黒背景</td></tr>
+<tr><td>表</td><td>△ 罫線なし</td><td>○ テーマの罫線</td></tr>
+<tr><td>SVG を直接置く</td><td>✕ 消える</td><td>✕ 消える</td></tr>
+<tr><td><code>&lt;img src="data:image/svg+xml…"&gt;</code></td><td>✕ 消える</td><td><strong>○ 公開後も残る</strong></td></tr>
+</tbody></table>
+<p>つまり、図を <code>&lt;img&gt;</code> の data URI にしておけば、<strong>貼るだけで本物の図が入る</strong>ということです。この記事の図も全部それで入っています 🙌</p>
+<p>ブラウザからコピーすると、クリップボードには描画済みの HTML が乗ります。エディタはそれを自分のブロックに変換して受け取るから、テーマの装飾も当たる。<code>/html</code> ブロックは「自分のブロックにしない」ので、逆に何も当たらなかったわけです。</p>
+
+<h2>スキルはこうなった 🙌</h2>
+<img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='14' viewBox='0 0 640 90' width='640' height='90'%3E %3Crect x='10' y='25' width='110' height='40' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='65' y='50' text-anchor='middle' fill='%23222'%3EHTML ファイル%3C/text%3E%3Cline x1='122' y1='45' x2='150' y2='45' stroke='%23555' stroke-width='1.5'/%3E%3Cpath d='M150,45 l-8,-4 l0,8 z' fill='%23555'/%3E%3Crect x='152' y='25' width='110' height='40' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='207' y='50' text-anchor='middle' fill='%23222'%3Eブラウザで開く%3C/text%3E%3Cline x1='264' y1='45' x2='292' y2='45' stroke='%23555' stroke-width='1.5'/%3E%3Cpath d='M292,45 l-8,-4 l0,8 z' fill='%23555'/%3E%3Crect x='294' y='25' width='110' height='40' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='349' y='50' text-anchor='middle' fill='%23222'%3ECtrl+A → C%3C/text%3E%3Cline x1='406' y1='45' x2='434' y2='45' stroke='%23555' stroke-width='1.5'/%3E%3Cpath d='M434,45 l-8,-4 l0,8 z' fill='%23555'/%3E%3Crect x='436' y='25' width='110' height='40' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='491' y='50' text-anchor='middle' fill='%23222'%3E本文欄に V%3C/text%3E%3Cline x1='548' y1='45' x2='576' y2='45' stroke='%23555' stroke-width='1.5'/%3E%3Cpath d='M576,45 l-8,-4 l0,8 z' fill='%23555'/%3E%3Crect x='578' y='25' width='52' height='40' rx='8' fill='%23eef3ff' stroke='%234a6cf7' stroke-width='1.5'/%3E%3Ctext x='604' y='50' text-anchor='middle' fill='%23222'%3E公開%3C/text%3E %3C/svg%3E" alt="最終的な貼り方の流れ" style="max-width:100%">
+<p>つまり、出力を HTML ファイルにして、開いてコピーして貼るだけ、ということです。</p>
+<p>最初の質問を「出力形式は HTML か Markdown か」にしました。投稿先が Markdown を解釈するなら Markdown、しないなら HTML。推奨は付けるけど、決めるのは人。図は HTML のときだけ SVG の data URI で入れて、<code>&lt;svg&gt;</code> の直置きは(消えるので)禁止に。</p>
+<p>最後に足したのが、タイトルを本文から作る機能です。書き終えてから 3 案(結果型 / 読者の得型 / 一言型)を出して、推奨を 1 つ選ぶ。この記事のタイトルもそれで決めました 💡</p>
+
+<h2>真似するなら、ここだけ 👋</h2>
+<p><strong>貼ってみるまで分からない。</strong> サニタイズで何が消えるかは、理屈では半分しか当たりませんでした。「HTML 案は負ける」という私の結論も、貼る方法を 1 つ見落としていただけです。</p>
+<p><strong>数字は裏を取る。</strong> スキルが「捏造された数字は記事全体の信頼を落とす」と言っているのに、その記事自身が例のとおりの数字を持っていました。ルールを作ったら、まず自分の成果物に当てる。</p>
+<p><strong>機械的な検証は下位モデルに。</strong> 6 文体 × 2 形式の記事を書かせるのは、読み比べのための材料づくりで、判断は人がします。そこに上位モデルは要りません。</p>
+<p>同じように CMS に「貼るだけ」で出したい人は、まず<strong>描画した画面をコピーして貼る</strong>を試してみてください。エディタが TipTap 系なら、たぶん同じ結果になります。うまくいかなかったエディタがあったら、ぜひ教えてほしいです 🙏</p>
+</article></body></html>
