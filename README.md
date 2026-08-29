@@ -116,12 +116,13 @@ Canvas のプレビューで描画し、そこから範囲コピーして CMS �
 ## 中身
 
 ```
-skills/chat-to-article/SKILL.md   スキル本体(これ 1 枚で完結)
-docs/                             このスキルで生成した記事の見本
+skills/chat-to-article/SKILL.md      スキル本体(これ 1 枚で完結)
+docs/handoff-to-paste-route.html     見本: HTML 出力(ゆるっと / SVG 図入り / EmDash 向け)
+docs/grilling-skill-design.md        見本: Markdown 出力(ゆるっと)
 README.md / LICENSE
 ```
 
-`docs/` の見本は、いずれも「このスキルを作った過程」をこのスキル自身で記事化したものです。
+`docs/` の見本は、どちらも「このスキルを作った過程」をこのスキル自身で記事化したものです。
 
 ## 設計方針
 
